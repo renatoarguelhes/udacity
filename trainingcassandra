@@ -86,7 +86,8 @@ cluster = Cluster()
 # To establish connection and begin executing queries, need a session
 session = cluster.connect()
 Create Keyspace
-In [53]: try:
+
+try:
 session.execute("""
 CREATE KEYSPACE IF NOT EXISTS projectcassandra
 WITH REPLICATION =
@@ -94,7 +95,7 @@ WITH REPLICATION =
 )
 except Exception as e:
 print(e)
-3
+
 Set Keyspace
 In [54]: try:
 session.set_keyspace('projectcassandra')
@@ -102,11 +103,13 @@ except Exception as e:
 print(e)
 2.2.1 Now we need to create tables to run the following queries. Remember, with Apache
 Cassandra you model the database tables on the queries you want to run.
-In [42]: try:
+
+try:
 session.execute("DROP TABLE IF EXISTS session_item")
 except psycopg2.Error as e:
 print("Error: Issue dropping table")
 print (e)
+
 try:
 session.execute("""
 CREATE TABLE IF NOT EXISTS session_item (
@@ -119,14 +122,15 @@ PRIMARY KEY(sessionId, itemInSession) )
 """)
 except Exception as e:
 print(e)
-In [43]: file = 'event_datafile_new.csv'
+
+file = 'event_datafile_new.csv'
 with open(file, encoding = 'utf8') as f:
 csvreader = csv.reader(f)
 next(csvreader) # skip header
 for line in csvreader:
 firstquery = "INSERT INTO session_item (sessionId, itemInSession, artist, song, firstquery = firstquery + "VALUES(%s,%s,%s,%s,%s)"
 session.execute(firstquery, (int(line[8]), int(line[3]), line[0], line[9], float(line[5]) In [ ]:
-4
+
 2.3 Create queries to ask the following three questions of the data
 2.3.1 1. Give me the artist, song title and song’s length in the music app history that was heard
 during sessionId = 338, and itemInSession = 4
@@ -149,7 +153,9 @@ session.execute(query, (line[#], line[#]))
 
 SyntaxError: unexpected EOF while parsing
 Do a SELECT to verify that the data have been inserted into each table
-In [46]: ## TO-DO: Add in the SELECT statement to verify the data was entered into the table
+
+## TO-DO: Add in the SELECT statement to verify the data was entered into the table
+
 try:
 fisrtquery = session.execute("""
 SELECT artist, song, length
@@ -158,17 +164,21 @@ WHERE sessionId = 338 and itemInSession = 4
 """)
 except Exception as e:
 print(e)
-5
+
 for row in fisrtquery:
 print(row.artist, row.song, row.length )
-Faithless Music Matters (Mark Knight Dub) 495.30731201171875
+
+
 2.3.4 COPY AND REPEAT THE ABOVE THREE CELLS FOR EACH OF THE THREE QUESTIONS
-In [55]: ## TO-DO: Query 2: Give me only the following: name of artist, song (sorted by itemInSession) ## for userid = 10, sessionid = 182
+
+## TO-DO: Query 2: Give me only the following: name of artist, song (sorted by itemInSession) ## for userid = 10, sessionid = 182
+
 try:
 session.execute("DROP TABLE IF EXISTS session_user")
 except psycopg2.Error as e:
 print("Error: Issue dropping table")
 print (e)
+
 try:
 session.execute("""
 CREATE TABLE IF NOT EXISTS session_user (
@@ -183,81 +193,104 @@ PRIMARY KEY ( (userid, sessionId), itemInSession) )
 """)
 except Exception as e:
 print(e)
-In [56]: file2 = 'event_datafile_new.csv'
+
+file2 = 'event_datafile_new.csv'
 with open(file2, encoding = 'utf8') as f:
-csvreader = csv.reader(f)
-next(csvreader) # skip header
-for line in csvreader:
-secondquery = "INSERT INTO session_user (sessionId, itemInSession, userid, song, secondquery = secondquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
-session.execute(secondquery, (int(line[8]),
-int(line[3]),
-int(line[3]),
-line[0],
-line[9],
-line[5],
-line[5]) )
-6
-In [60]: try:
-secondquery = session.execute("""
-SELECT artist, song, firstName, lastName
+    csvreader = csv.reader(f)
+    next(csvreader) # skip header
+    for line in csvreader:
+        secondquery = "INSERT INTO session_user (sessionId, itemInSession, userid,  song, artist, firstName, lastName )"
+        secondquery = secondquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
+        session.execute(secondquery, (int(line[8]), 
+                                     int(line[3]), 
+                                     int(line[3]), 
+                                     line[0], 
+                                     line[9], 
+                                     line[5],  
+                                     line[5]) )
+
+try: 
+    secondquery = session.execute("""
+         SELECT artist, song, firstName, lastName
 FROM session_user
-WHERE sessionId = 182 and userid = 10
-""")
+            WHERE sessionId = 182 and userid = 10
+            """)
 except Exception as e:
-print(e)
+    print(e)
+    
 for row in secondquery:
-print(row.artist, row.song, row.firstName, row.lastName )
-In [61]: ## TO-DO: Query 3: Give me every user name (first and last) in my music app history who ## create table
+    print(row.artist, row.song, row.firstName, row.lastName )
+    
+
+## TO-DO: Query 3: Give me every user name (first and last) in my music app history who ## create table
+
 try:
 session.execute("DROP TABLE IF EXISTS music")
 except psycopg2.Error as e:
 print("Error: Issue dropping table")
 print (e)
-try:
-session.execute("""
-CREATE TABLE IF NOT EXISTS music (
-sessionId int,
-song text,
-itemInSession int,
-userid int,
-artist text,
-firstName text,
-lastName text,
-PRIMARY KEY ( (song, sessionId), itemInSession) )
-""")
+
+try: 
+     session.execute("""
+         CREATE TABLE IF NOT EXISTS music (
+          sessionId float,
+          song text,
+          itemInSession float,
+          userid text,
+          artist text,
+          firstName text,
+          lastName text,
+          PRIMARY KEY ( (song, sessionId), itemInSession) )
+    """)
 except Exception as e:
-print(e)
-In [72]: ## music table load
+    print(e)
+
+## music table load
+
 file3 = 'event_datafile_new.csv'
 with open(file3, encoding = 'utf8') as f:
-csvreader = csv.reader(f)
-next(csvreader) # skip header
-for line in csvreader:
-thirdquery = "INSERT INTO music (sessionId, song, itemInSession, userid, artist, thirdquery = thirdquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
-session.execute(thirdquery, (int(line[8]),
-line[30],
-7
-int(line[3]),
-line[0],
-line[9],
-line[5],
-line[5]) )
----------------------------------------------------------------------------
-IndexError Traceback (most recent call last)
-<ipython-input-72-c4ac04795ae7> in <module>()
-8 thirdquery = thirdquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
-9 session.execute(thirdquery, (int(line[8]),
----> 10 line[30],
-11 int(line[3]),
-12 line[0],
-IndexError: list index out of range
-In [ ]:
-2.3.5 Drop the tables before closing out the sessions
-In [ ]: ## TO-DO: Drop the table before closing out the sessions
-In [ ]:
-2.3.6 Close the session and cluster connection ˝u
-In [50]: session.shutdown()
-cluster.shutdown()
-In [ ]:
-In [ ]:
-8
+    csvreader = csv.reader(f)
+    next(csvreader) # skip header
+    for line in csvreader:
+        thirdquery = "INSERT INTO music (sessionId,  song, itemInSession, userid, artist, firstName, lastName )"
+        thirdquery = thirdquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
+        session.execute(thirdquery, (float(line[5]), 
+                                     line[5], 
+                                     float(line[3]), 
+                                     line[0], 
+                                     line[9], 
+                                     line[5],  
+                                     line[5]) )
+
+
+try: 
+    thirdquery = session.execute("""
+            SELECT firstName, lastName 
+            FROM music 
+            WHERE song = 'All Hands Against His Own' ALLOW FILTERING
+            """)
+except Exception as e:
+    print(e)
+    
+for row in thirdquery:
+    print(row.firstName, row.lastName )
+    
+    
+    
+ try: 
+    session.execute("DROP TABLE IF EXISTS session_item")
+except psycopg2.Error as e: 
+    print("Error: Issue dropping table")
+    print (e)
+try: 
+    session.execute("DROP TABLE IF EXISTS session_user")
+except psycopg2.Error as e: 
+    print("Error: Issue dropping table")
+    print (e)
+try: 
+    session.execute("DROP TABLE IF EXISTS music")
+except psycopg2.Error as e: 
+    print("Error: Issue dropping table")
+    print (e)
+    
+    
