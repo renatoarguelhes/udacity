@@ -293,19 +293,20 @@ except Exception as e:
 
 
 file2 = 'event_datafile_new.csv'
+
 with open(file2, encoding = 'utf8') as f:
-    csvreader = csv.reader(f)
-    next(csvreader) # skip header
-    for line in csvreader:
-        secondquery = "INSERT INTO session_user (sessionId, itemInSession, userid,  song, artist, firstName, lastName )"
-        secondquery = secondquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
-        session.execute(secondquery, (int(line[8]), 
-                                     int(line[3]), 
-                                     int(line[3]), 
-                                     line[0], 
-                                     line[9], 
-                                     line[5],  
-                                     line[5]) )
+
+csvreader = csv.reader(f)
+
+next(csvreader) # skip header
+
+for line in csvreader:
+
+secondquery = "INSERT INTO session_user (sessionId, itemInSession, userid, song, artist, firstName, lastName )"
+
+secondquery = secondquery + "VALUES(%s,%s,%s,%s,%s,%s,%s)"
+
+session.execute(secondquery, (int(line[10]), int(line[8]), int(line[3]), line[0], line[9], line[1], line[4]))
 
 
 # In[15]:
