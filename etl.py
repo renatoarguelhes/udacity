@@ -31,6 +31,14 @@ cur.execute(artist_table_insert, artist_data)
 
 		# Inserted records into artist and song table
 
+def process_song_file(cur, filepath):
+	# open log file
+    log_files = get_files('data/song_data')
+    print(log_files)
+    filepath = log_files[0]
+    df = pd.read_json(filepath, lines=True)
+    df.head(1)    
+    
 def process_log_file(cur, filepath):
 	# open log file
     log_files = get_files('data/log_data')
@@ -38,7 +46,6 @@ def process_log_file(cur, filepath):
     filepath = log_files[0]
     df = pd.read_json(filepath, lines=True)
     df.head(1)
-
 
 		# filter by NextSong action
     df = df[df['page']=='NextSong']
@@ -98,13 +105,12 @@ def process_data(cur, conn, filepath, func):
         conn.commit()
     print('{}/{} files processed.'.format(i, num_files))
 
-
 def main():
 	conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
 	cur = conn.cursor()
 	process_data(cur, conn, filepath='data/song_data', func=process_song_file)
 	process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 	conn.close()
-
+    
 if __name__ == "__main__":
     main()
