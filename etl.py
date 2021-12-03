@@ -56,12 +56,15 @@ def process_log_file(cur, filepath):
 
 		
 		# insert time data records
+    time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday], axis=1)
+    column_labels = ['start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday']
     time_data.columns = column_labels
     time_df = time_data
     time_df.head()
 
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
+        conn.commit()
 
 		# load user table
     user_df = df[['userId','firstName','lastName','gender','level']]
