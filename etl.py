@@ -15,19 +15,19 @@ def get_files(filepath):
             all_files.append(os.path.abspath(f))
     return all_files
             
-song_files = get_files('data/song_data')
-print(song_files)
-filepath = song_files[3]
-df = pd.read_json(filepath, lines=True)
-df.head()
+    song_files = get_files('data/song_data')
+    print(song_files)
+    filepath = song_files[3]
+    df = pd.read_json(filepath, lines=True)
+    df.head()
  
 		# insert song record
-song_data = list(df[['song_id','title','artist_id','year','duration']].values[0])
-cur.execute(song_table_insert, song_data)
+    song_data = list(df[['song_id','title','artist_id','year','duration']].values[0])
+    cur.execute(song_table_insert, song_data)
 		
 		# insert artist record
-artist_data = list(df[['artist_id','artist_name','artist_location','artist_latitude','artist_longitude']].values[0])
-cur.execute(artist_table_insert, artist_data)
+    artist_data = list(df[['artist_id','artist_name','artist_location','artist_latitude','artist_longitude']].values[0])
+    cur.execute(artist_table_insert, artist_data)
 
 		# Inserted records into artist and song table
 
@@ -80,14 +80,14 @@ def process_log_file(cur, filepath):
         results = cur.fetchone()
 
 				
-    if results:
-        songid, artistid = results
-    else:
-        songid, artistid = None, None
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
 
 				# insert songplay record
-    songplay_data =  (pd.to_datetime(row.ts, unit='ms'), row.userId, row.level, songid, artistid, row.location, row.userAgent) 
-    cur.execute(songplay_table_insert, songplay_data)
+        songplay_data =  (pd.to_datetime(row.ts, unit='ms'), row.userId, row.level, songid, artistid, row.location, row.userAgent) 
+        cur.execute(songplay_table_insert, songplay_data)
 # Attetion, it is necessary to converte ts to milisecond otherwise will return an error.
 
 def process_data(cur, conn, filepath, func):
