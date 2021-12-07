@@ -14,30 +14,22 @@ def get_files(filepath):
         for f in files :
             all_files.append(os.path.abspath(f))
     return all_files
-            
-    song_files = get_files('data/song_data')
-    print(song_files)
-    filepath = song_files[3]
+
+        # Inserted records into artist and song table
+
+def process_song_file(cur, filepath):
     df = pd.read_json(filepath, lines=True)
-    df.head()
- 
-		# insert song record
+    df.head(1)
+
+    # insert song record
     song_data = list(df[['song_id','title','artist_id','year','duration']].values[0])
     cur.execute(song_table_insert, song_data)
-		
-		# insert artist record
+
+    # insert artist record
     artist_data = list(df[['artist_id','artist_name','artist_location','artist_latitude','artist_longitude']].values[0])
     cur.execute(artist_table_insert, artist_data)
 
-		# Inserted records into artist and song table
-
-def process_song_file(cur, filepath):
-	# open log file
-    log_files = get_files('data/song_data')
-    print(log_files)
-    filepath = log_files[0]
-    df = pd.read_json(filepath, lines=True)
-    df.head(1)    
+		# Inserted records into artist and song table    
     
 def process_log_file(cur, filepath):
 	# open log file
