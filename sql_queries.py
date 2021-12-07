@@ -67,12 +67,12 @@ INSERT INTO users (
 song_table_insert = ("""
 INSERT INTO songs (
     song_id, title, artist_id, year, duration) \
-    VALUES (%s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s) ON CONFLICT(song_id) DO NOTHING;
 """)
 artist_table_insert = ("""
 INSERT INTO artists (
     artist_id, artist_name, artist_location, artist_latitude, artist_longitude) \
-    VALUES (%s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s) ON CONFLICT(artist_id) DO NOTHING;
 """)
 time_table_insert = ("""
 INSERT INTO time (
