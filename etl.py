@@ -32,12 +32,8 @@ def process_song_file(cur, filepath):
 		# Inserted records into artist and song table    
     
 def process_log_file(cur, filepath):
-	# open log file
-    log_files = get_files('data/log_data')
-    print(log_files)
-    filepath = log_files[0]
+    # open log file
     df = pd.read_json(filepath, lines=True)
-    df.head(1)
 
 		# filter by NextSong action
     df = df[df['page']=='NextSong']
